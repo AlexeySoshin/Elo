@@ -1,10 +1,13 @@
 package me.soshin.parse;
 
-import me.soshin.algo.Elo;
+import me.soshin.algo.RankingAlgorithm;
+import me.soshin.algo.RankingResult;
 import me.soshin.model.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -15,12 +18,16 @@ import java.util.Scanner;
 /**
  * Parses players and games from file
  */
+@Component
 public class PlayersParser {
 
 
     private static final String PLAYER_NOT_FOUND_MESSAGE = "Player with id %d not found on line %d, skipping";
 
     private static final Logger log = LoggerFactory.getLogger(PlayersParser.class);
+
+    @Resource
+    private RankingAlgorithm rankingAlgorithm;
 
     private final Map<Integer, Player> players = new HashMap<>();
 
@@ -53,7 +60,7 @@ public class PlayersParser {
                 } else if (loser == null) {
                     log.error(String.format(PLAYER_NOT_FOUND_MESSAGE, loserId, i));
                 } else {
-                    final Elo.Result result = Elo.compute(winner.getRank(), loser.getRank());
+                    final RankingResult result = this.rankingAlgorithm.compute(winner.getRank(), loser.getRank());
                     winner.setRank(result.getWinnerRank());
                     loser.setRank(result.getLoserRank());
 
@@ -81,8 +88,7 @@ public class PlayersParser {
                 final Integer id;
                 try {
                     id = Integer.parseInt(playerData[0]);
-                }
-                catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     log.error("Expected to get player ID, got '%s'", playerData[0]);
                     continue;
                 }

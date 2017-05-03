@@ -30,7 +30,8 @@ public class PlayerDAO {
     @Value(value = "classpath:players.data")
     private Resource playersSource;
 
-    private final PlayersParser playersParser = new PlayersParser();
+    @javax.annotation.Resource
+    private PlayersParser playersParser;
 
     private Map<Integer, Player> players = new ConcurrentHashMap<>();
 
@@ -51,16 +52,16 @@ public class PlayerDAO {
      * @param games
      * @throws IOException
      */
-    public void load(InputStream players, InputStream games) throws IOException {
+    public void load(final InputStream players, final InputStream games) throws IOException {
 
         this.players = this.playersParser.parse(players, games);
-        log.info(String.format("Players loaded: %d", this.players.size()));
+        this.log.info(String.format("Players loaded: %d", this.players.size()));
 
-        ranked = new ArrayList<>(this.players.values());
+        this.ranked = new ArrayList<>(this.players.values());
 
-        Collections.sort(ranked, this.comparator);
+        Collections.sort(this.ranked, this.comparator);
 
-        log.info("Players ranked");
+        this.log.info("Players ranked");
     }
 
 
