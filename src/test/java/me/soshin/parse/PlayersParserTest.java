@@ -2,20 +2,26 @@ package me.soshin.parse;
 
 import me.soshin.model.Player;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest
 public class PlayersParserTest {
 
 
+    @Resource
+    PlayersParser parser;
 
     @Test
     public void parseGoodInput() throws Exception {
-
-        final PlayersParser parser = new PlayersParser();
 
         final Map<Integer, Player> players = parser.parse(this.getClass().getResourceAsStream("/good/players.data"), this.getClass().getResourceAsStream("/good/games.data"));
 
